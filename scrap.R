@@ -1,14 +1,18 @@
+# Code to scrap INE census, valid as of 2011 census
+# NOTE: Needs to be updated after 2021 census is released
+
+setwd("~/Documents/Academic/DATA/Spain")
 library(rvest)
 library(stringr)
 options(stringsAsFactors = FALSE)
-source("adapt_function.R")
+library(muniSpain)
 
-dir.create("prov_files")
-dir.create("prov_files_cambios")
+dir.create("census/prov_files")
+dir.create("census/prov_files_cambios")
 
-codelist = read.csv("codelist.csv")
+codelist = read.csv("census/codelist.csv")
 
-p = c("alava", "albacete", "alicante", "almeria", "avila",
+provs = c("alava", "albacete", "alicante", "almeria", "avila",
   "badajoz", "baleares", "barcelona", "burgos", "caceres",
   "cadiz", "castellon", "ciudad real", "cordoba", "a coruna",
   "cuenca", "girona", "granada", "guadalajara", "gipuzkoa",
@@ -23,18 +27,17 @@ p = c("alava", "albacete", "alicante", "almeria", "avila",
 ############################################################
 ### PART I: SCRAP DATA FROM INE WEBSITE
 
-url = "http://www.ine.es/intercensal/inicio.do?regIni=51&regFin=100&L=1"
+url = "https://www.ine.es/intercensal/"
 
-not_yet = which(!p %in% gsub("\\.csv", "", list.files("prov_files")))
-
-for (j in not_yet){
+for (j in provs){
 
   census_data = data.frame()
   cambios = data.frame()
 
-  prov_code = j
+  prov_code = prov_to_code(j)
 
-  for (i in codelist$muni[codelist$prov == j]){
+  for (i in codelist$muni[codelist$prov == prov_code]){
+  # for (i in c(1:999, 5001:5999)){
 
     muni_code = i
     print(i)
@@ -59,7 +62,7 @@ for (j in not_yet){
       muni_name = str_sub(muni_name,
         str_locate(muni_name, muni_code)[,2] + 1, -1L)
       muni_name = adapt(muni_name)
-      prov_name = p[prov_code]
+      prov_name = code_to_prov(prov_code)
 
       muni_data_raw = resp2 %>%
         html_nodes("table") %>%
@@ -107,10 +110,10 @@ for (j in not_yet){
   }
 
   # Saving census data
-  file = paste0("prov_files/", p[prov_code], ".csv")
+  file = paste0("census/prov_files/", code_to_prov(prov_code), ".csv")
   write.csv(census_data, file, row.names = FALSE)
   # Saving cambios to municipios
-  file_cambios = paste0("prov_files_cambios/", p[prov_code], ".csv")
+  file_cambios = paste0("census/prov_files_cambios/", code_to_prov(prov_code), ".csv")
   write.csv(cambios, file_cambios, row.names = FALSE)
 
 }
