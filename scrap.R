@@ -1,7 +1,6 @@
 # Code to scrap INE census, valid as of 2011 census
 # NOTE: Needs to be updated after 2021 census is released
 
-setwd("~/Documents/Academic/DATA/Spain")
 library(rvest)
 library(stringr)
 options(stringsAsFactors = FALSE)
