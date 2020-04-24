@@ -6,10 +6,10 @@ library(stringr)
 options(stringsAsFactors = FALSE)
 library(muniSpain)
 
-dir.create("census/prov_files")
-dir.create("census/prov_files_cambios")
+dir.create("prov_files")
+dir.create("prov_files_cambios")
 
-codelist = read.csv("census/codelist.csv")
+codelist = read.csv("codelist.csv")
 
 provs = c("alava", "albacete", "alicante", "almeria", "avila",
   "badajoz", "baleares", "barcelona", "burgos", "caceres",
@@ -109,10 +109,10 @@ for (j in provs){
   }
 
   # Saving census data
-  file = paste0("census/prov_files/", code_to_prov(prov_code), ".csv")
+  file = paste0("prov_files/", code_to_prov(prov_code), ".csv")
   write.csv(census_data, file, row.names = FALSE)
   # Saving cambios to municipios
-  file_cambios = paste0("census/prov_files_cambios/", code_to_prov(prov_code), ".csv")
+  file_cambios = paste0("prov_files_cambios/", code_to_prov(prov_code), ".csv")
   write.csv(cambios, file_cambios, row.names = FALSE)
 
 }
